@@ -1,0 +1,53 @@
+#{extends 'main.html' /}
+#{set title:'Cron Creator' /}
+
+<div class="page-header">
+    <h1>Create new poller jobs</h1>
+</div>
+
+#{form @Application.postCreateCron()}
+		<fieldset>
+				<div class="clearfix">
+        			<label for="wsdlURL">Service WSDL URL</label>
+        			<div class="input">
+        				<input type="text" name="wsdlURL" id="wsdlURL" class="xlarge" size="30"/>
+        			</div>
+        		</div>
+         		
+	    		<div class="actions">
+        			<input class="btn primary" type="submit" value="Create" />
+        			&nbsp;
+        			<button type="reset" class="btn">Cancel</button>
+        		</div>
+        </fieldset>
+#{/form}
+
+<div class="page-header">
+    <h1>Current CronJobs</h1>
+</div>
+#{if informations}
+	<table class="zebra-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Polled</th>
+            <th>Reply</th>
+            <th>Cron</th>
+            <th>Topic</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        #{list informations, as : 'i'}
+          <tr>
+            <td>${i.id}</td>
+            <td>${i.toPoll}</td>
+            <td>${i.replyTo}</td>
+            <td>${i.cronExpression}</td>
+            <td>${i.topicName}</td>
+            <td><a href="#" class="btn info">Details</a></td>
+          </tr>
+        #{/list}
+        </tbody>
+      </table>
+#{/if}

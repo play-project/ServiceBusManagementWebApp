@@ -1,0 +1,29 @@
+# Application dependencies
+
+require:
+    - play
+    - play -> crud
+    - play -> secure
+    - eu.playproject.servicebus -> play-dsb-cronclient 1.0-SNAPSHOT:
+        exclude:
+          - org.slf4j -> *
+    
+repositories:
+- petalslink:
+    type: iBiblio
+    root: "http://maven.petalslink.com/public-snapshot/"
+    contains:
+        - eu.playproject.servicebus -> *
+        - eu.play-project -> *
+        - org.petalslink.dsb -> *
+        
+- petalslinkrelease:
+    type: iBiblio
+    root: "http://maven.petalslink.com/public/"
+    
+- petalslinkothers:
+    type: iBiblio
+    root: "http://maven.petalslink.com/others/"
+    contains:
+        - org.apache.cxf -> *
+
