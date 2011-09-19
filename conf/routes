@@ -8,6 +8,12 @@ GET     /                                       Application.index
 GET     /cron									Application.cron
 POST    /createCron                             Application.postCreateCron
 
+GET    /cron/${id}/start                        Application.startCron
+GET    /cron/${id}/stop                         Application.stopCron
+GET    /cron/${id}/pause                        Application.pauseCron
+GET    /cron/${id}/resume                       Application.pauseCron
+GET    /cron/${id}/details                      Application.cronDetails
+
 # Ignore favicon requests
 GET     /favicon.ico                            404
 

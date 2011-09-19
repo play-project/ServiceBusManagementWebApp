@@ -16,27 +16,22 @@
     <div class="topbar">
       <div class="fill">
         <div class="container">
-          <h3><a href="@{Application.index()}">DSB Manager</a></h3>
+          <h3><a href="@{Application.index()}">Service Bus Manager</a></h3>
           <ul>
             <!--- browse -->
             <ul class="nav secondary-nav">
-              <li class="menu">
-                <a href="#" class="menu">SOA</a>
+            <li class="menu">
+                <a href="#" class="menu">Actions</a>
                 <ul class="menu-dropdown">
-                  <li><a href="">Services</a></li>
-                  <li><a href="">Endpoints</a></li>
+                  <li><a href="@{Application.cron()}">Create new poller</a></li>
                 </ul>
               </li>
               <li class="menu">
-                <a href="#" class="menu">EDA</a>
+                <a href="#" class="menu">DSB Tools</a>
                 <ul class="menu-dropdown">
-                  <li><a href="">Topics</a></li>
-                </ul>
-              </li>
-              <li class="menu">
-                <a href="#" class="menu">Core</a>
-                <ul class="menu-dropdown">
-                  <li><a href="">Services</a></li>
+                  <li><a target="_blank" href="${play.configuration.get("dsb.wsn.webapp")}">WS Notification</a></li>
+                  <li><a target="_blank" href="${play.configuration.get("dsb.management.webapp")}">DSB Management</a></li>
+                  <li><a target="_blank" href="${play.configuration.get("dsb.monitoring.webapp")}">DSB Monitoring</a></li>
                 </ul>
               </li>
             </ul>

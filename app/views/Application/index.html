@@ -1,3 +1,26 @@
 #{extends 'main.html' /}
 #{set title:'Home' /}
 
+<div class="page-header">
+    <h1>Current Jobs</h1>
+</div>
+#{if informations}
+	<table class="zebra-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Polled</th>
+            <th>Topic</th>
+          </tr>
+        </thead>
+        <tbody>
+        #{list informations, as : 'i'}
+          <tr>
+            <td><a href="@{Application.cronDetails(i.id)}">${i.id}</a></td>
+            <td><b>Endpoint :</b> ${i.toPoll.endpointName}<br> <b>Service :</b> ${i.toPoll.serviceName}<br> <b>Interface :</b> ${i.toPoll.interfaceName}</td>
+            <td>${i.topicName}</td>
+          </tr>
+        #{/list}
+        </tbody>
+      </table>
+#{/if}

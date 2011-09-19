@@ -1,22 +1,17 @@
 package controllers;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.petalslink.dsb.cxf.CXFHelper;
 import org.petalslink.dsb.servicepoller.api.ServicePollerException;
-import org.petalslink.dsb.servicepoller.api.WSNPollerService;
 import org.petalslink.dsb.servicepoller.api.WSNPollerServiceInformation;
+import org.petalslink.dsb.servicepoller.client.WSNPollerClient;
 import org.petalslink.dsb.ws.api.ServiceEndpoint;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 import play.libs.XML;
 import play.mvc.Controller;
@@ -26,37 +21,44 @@ import eu.playproject.servicebus.cronclient.WSNCronClientImpl;
 public class Application extends Controller {
 
 	public static void index() {
-		cron();
-	}
-	
-	public static void cron() {
-		//WSNPollerService service = CXFHelper.getClient(getURL(), WSNPollerService.class);
-		//List<WSNPollerServiceInformation> informations = service.getInformation();
-		List<WSNPollerServiceInformation> informations = new ArrayList<WSNPollerServiceInformation>();
-		WSNPollerServiceInformation info = new WSNPollerServiceInformation();
-		info.setCronExpression("lll");
-		info.setId("IDA");
-		info.setInputMessage("<foo></foo>");
-		informations.add(info);
+		// List<WSNPollerServiceInformation> informations = new
+		// ArrayList<WSNPollerServiceInformation>();
+		// WSNPollerServiceInformation info = new WSNPollerServiceInformation();
+		// info.setCronExpression("lll");
+		// info.setId("IDA");
+		// info.setInputMessage("<foo></foo>");
+		// informations.add(info);
+		WSNPollerClient client = new WSNPollerClient(getURL());
+		List<WSNPollerServiceInformation> informations = null;
+		try {
+			informations = client.getInformation();
+		} catch (Exception e) {
+			flash.error("Can not connect to service");
+		}
 		render(informations);
 	}
 
-	public static void postCreateCron(String inputMessage, String topicURI,
-			String topicName, String topicPrefix, String operationToPoll,
-			String delay) {
-		Document document = XML.getDocument(inputMessage);
+	public static void cron() {
+		render();
+	}
+
+	public static void postCreateCron(String wsdlURL, String message,
+			String topicurl, String topicname, String topicprefix,
+			String operation, String period) {
+
+		// /TODO : Add validation
+		Document document = XML.getDocument(message);
 		if (document == null) {
 			flash.error(
 					"Can not create a XML document from the input message '%s'",
-					inputMessage);
+					message);
+			index();
 		}
 
-		WSNCronClient client = new WSNCronClientImpl(
-				"http://localhost:7600/petals/ws/");
+		WSNCronClient client = new WSNCronClientImpl(getURL());
 
-		// poll every second and send response to the notification engine...
 		String id = null;
-		QName topic = new QName(topicURI, topicName, topicPrefix);
+		QName topic = new QName(topicurl, topicname, topicprefix);
 		QName notify = new QName("http://docs.oasis-open.org/wsn/b-2", "Notify");
 		ServiceEndpoint to = new ServiceEndpoint();
 		to.setEndpoint("NotificationConsumerPort");
@@ -65,22 +67,90 @@ public class Application extends Controller {
 		to.setService(new QName("http://docs.oasis-open.org/wsn/b-2",
 				"NotificationConsumerService"));
 
-		String cronExpression = "* * * * * ?";
+		String cronExpression = "0/" + period + " * * * * ?";
 
 		try {
-			id = client.pollService(
-					"http://localhost:7600/petals/ws/HelloService?wsdl",
-					QName.valueOf(operationToPoll), document, cronExpression,
-					to, notify, topic);
+			id = client.pollService(wsdlURL, QName.valueOf(operation),
+					document, cronExpression, to, notify, topic);
 
-			System.out.println("Get an ID " + id);
+			flash.success("Cron job created (ID is %s)", id);
+
 		} catch (ServicePollerException e) {
 			flash.error("Error while invoking polling operation : %s",
 					e.getMessage());
+		} catch (Exception ee) {
+			flash.error("Unexpected exception %s", ee.getMessage());
 		}
-		render();
+		index();
 	}
-	
+
+	public static void startCron(String id) {
+		index();
+	}
+
+	public static void stopCron(String id) {
+		WSNPollerClient client = CXFHelper.getClient(getURL(),
+				WSNPollerClient.class);
+		try {
+			client.stop(id);
+		} catch (Exception e) {
+			flash.error("Error while stopping poll");
+		}
+		index();
+	}
+
+	public static void pauseCron(String id) {
+		WSNPollerClient client = CXFHelper.getClient(getURL(),
+				WSNPollerClient.class);
+		try {
+			client.pause(id);
+		} catch (Exception e) {
+			flash.error("Error while pausing poll");
+		}
+		index();
+	}
+
+	public static void resumeCron(String id) {
+		WSNPollerClient client = CXFHelper.getClient(getURL(),
+				WSNPollerClient.class);
+		try {
+			client.resume(id);
+		} catch (Exception e) {
+			flash.error("Error while pausing poll");
+		}
+		index();
+	}
+
+	public static void cronDetails(String id) {
+		if (id == null) {
+			flash.error("Bad request, id is null");
+			index();
+		}
+		WSNPollerClient client = new WSNPollerClient(getURL());
+		try {
+			List<WSNPollerServiceInformation> informations = client
+					.getInformation();
+			boolean found = false;
+			WSNPollerServiceInformation information = null;
+			Iterator<WSNPollerServiceInformation> iter = informations
+					.iterator();
+			while (!found && iter.hasNext()) {
+				information = iter.next();
+				if (id.equals(information.getId())) {
+					found = true;
+				}
+			}
+
+			if (found) {
+				render(information);
+			}
+		} catch (Exception e) {
+			flash.error("Error while pausing poll");
+		}
+		flash.error("Bad request, id '%s' not found", id);
+		index();
+	}
+
 	private static String getURL() {
 		return "http://localhost:7600/petals/ws";
 	}

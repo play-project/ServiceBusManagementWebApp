@@ -2,18 +2,60 @@
 #{set title:'Cron Creator' /}
 
 <div class="page-header">
-    <h1>Create new poller jobs</h1>
+    <h1>Create new poller job</h1>
 </div>
 
 #{form @Application.postCreateCron()}
 		<fieldset>
+				<h3>Service To Poll</h3>
 				<div class="clearfix">
-        			<label for="wsdlURL">Service WSDL URL</label>
+        			<label for="wsdlURL">WSDL URL</label>
         			<div class="input">
-        				<input type="text" name="wsdlURL" id="wsdlURL" class="xlarge" size="30"/>
+        				<input type="text" name="wsdlURL" id="wsdlURL" class="xlarge" size="50"/>
         			</div>
         		</div>
-         		
+        		<div class="clearfix">
+        			<label for="servicename">Operation QName</label>
+        			<div class="input">
+        				<input type="text" name="operation" id="operation" class="xlarge" size="50"/>
+        			</div>
+        		</div>
+        		
+        		<div class="clearfix">
+        		<label for="message">XML Input message</label>
+        			<div class="input">
+        				<textarea name="message" id="message" class="xlarge"></textarea>
+        			</div>
+        		</div>
+        		
+        		<h3>Topic to publish message to</h3>
+				<div class="clearfix">
+        			<label for="topicname">Topic Name</label>
+        			<div class="input">
+        				<input type="text" name="topicname" id="topicname" class="xlarge" size="50"/>
+        			</div>
+        		</div>
+				<div class="clearfix">
+        			<label for="topicurl">Topic URL</label>
+        			<div class="input">
+        				<input type="text" name="topicurl" id="topicurl" class="xlarge" size="50"/>
+        			</div>
+        		</div>
+        		<div class="clearfix">
+        			<label for="topicprefix">Topic Prefix</label>
+        			<div class="input">
+        				<input type="text" name="topicprefix" id="topicprefix" class="xlarge" size="50"/>
+        			</div>
+        		</div>
+
+        		<h3>Additional Configuration</h3>
+        		<div class="clearfix">
+        			<label for="period">Period (in seconds)</label>
+        			<div class="input">
+        				<input type="text" name="period" id="period" class="xlarge" size="50"/>
+        			</div>
+        		</div>
+        		
 	    		<div class="actions">
         			<input class="btn primary" type="submit" value="Create" />
         			&nbsp;
@@ -21,33 +63,3 @@
         		</div>
         </fieldset>
 #{/form}
-
-<div class="page-header">
-    <h1>Current CronJobs</h1>
-</div>
-#{if informations}
-	<table class="zebra-striped">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Polled</th>
-            <th>Reply</th>
-            <th>Cron</th>
-            <th>Topic</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-        #{list informations, as : 'i'}
-          <tr>
-            <td>${i.id}</td>
-            <td>${i.toPoll}</td>
-            <td>${i.replyTo}</td>
-            <td>${i.cronExpression}</td>
-            <td>${i.topicName}</td>
-            <td><a href="#" class="btn info">Details</a></td>
-          </tr>
-        #{/list}
-        </tbody>
-      </table>
-#{/if}

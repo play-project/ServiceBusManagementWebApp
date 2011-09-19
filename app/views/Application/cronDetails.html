@@ -1,0 +1,28 @@
+#{extends 'main.html' /}
+#{set title:'Cron Creator' /}
+
+<div class="page-header">
+    <h1>Cron Details</h1>
+</div>
+
+<div class="well">
+<a href="#" class="btn primary">Stop</a>
+<a href="#" class="btn">Pause</a>
+</div>
+
+<table>
+<tbody>
+<tr><td><b>Polled Service</b></td><td>${information.toPoll.serviceName}</td></tr>
+<tr><td><b>Polled Interface</b></td><td>${information.toPoll.interfaceName}</td></tr>
+<tr><td><b>Polled Endpoint</b></td><td>${information.toPoll.endpointName}</td></tr>
+<tr><td><b>Polled Operation</b></td><td>${information.toPoll.operation}</td></tr>
+<tr><td><b>Cron expression</b></td><td>${information.cronExpression}</td></tr>
+
+<tr><td><b>Topic Name</b></td><td>${information.topicName}</td></tr>
+<tr><td><b>Topic URI</b></td><td>${information.topicURI}</td></tr>
+<tr><td><b>Topic Prefix</b></td><td>${information.topicPrefix}</td></tr>
+
+<tr><td><b>Input Message</b></td><td><pre>${information.inputMessage}</pre></td></tr>
+
+</tbody>
+</table>
