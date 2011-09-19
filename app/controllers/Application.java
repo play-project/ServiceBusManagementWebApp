@@ -190,7 +190,7 @@ public class Application extends Controller {
 	private static String getURL() {
 		Node n = Node.getCurrentNode();
 		if (n == null) {
-			flash.success("Please connect");
+			flash.success("Please connect!");
 			connect();
 		}
 		return n.baseURL;
