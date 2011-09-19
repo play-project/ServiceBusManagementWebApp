@@ -2,8 +2,15 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
+#Import Secure
+*      /                  module:secure
+
 # Home page
 GET     /                                       Application.index
+
+GET     /connect                                Application.connect
+GET     /node/connect/{id}                      Application.nodeConnect
+GET     /node/disconnect/{id}                   Application.nodeDisconnect
 
 GET     /cron									Application.cron
 POST    /createCron                             Application.postCreateCron
@@ -22,3 +29,6 @@ GET     /public/                                staticDir:public
 
 # Catch all
 *       /{controller}/{action}                  {controller}.{action}
+
+# Import CRUD routes
+*      /admin              module:crud

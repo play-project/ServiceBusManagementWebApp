@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import models.Node;
+
 import org.petalslink.dsb.cxf.CXFHelper;
 import org.petalslink.dsb.servicepoller.api.ServicePollerException;
 import org.petalslink.dsb.servicepoller.api.WSNPollerServiceInformation;
@@ -14,11 +16,45 @@ import org.petalslink.dsb.ws.api.ServiceEndpoint;
 import org.w3c.dom.Document;
 
 import play.libs.XML;
+import play.mvc.Before;
 import play.mvc.Controller;
 import eu.playproject.servicebus.cronclient.WSNCronClient;
 import eu.playproject.servicebus.cronclient.WSNCronClientImpl;
 
 public class Application extends Controller {
+	
+	@Before
+	/**
+	 * Put some data on all requests...
+	 */
+	public static void init() {
+		Node n = Node.getCurrentNode();
+		if (n != null) {
+			renderArgs.put("currentNode", n);
+		}
+	}
+	
+	public static void connect() {
+		List<Node> nodes = Node.all().fetch();
+		render(nodes);
+	}
+	
+	public static void nodeConnect(Long id) {
+		Node n = Node.findById(id);
+		if (n != null) {
+			session.put("node", n.id);
+			flash.success("Connected to node %s", n.name);
+		} else {
+			flash.error("No such node");
+		}
+		connect();
+	}
+	
+	public static void nodeDisconnect(Long id) {
+		session.remove("node");
+		flash.success("Disconnected...");
+		connect();
+	}
 
 	public static void index() {
 		// List<WSNPollerServiceInformation> informations = new
@@ -152,7 +188,12 @@ public class Application extends Controller {
 	}
 
 	private static String getURL() {
-		return "http://localhost:7600/petals/ws";
+		Node n = Node.getCurrentNode();
+		if (n == null) {
+			flash.success("Please connect");
+			connect();
+		}
+		return n.baseURL;
 	}
 
 }

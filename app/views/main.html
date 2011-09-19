@@ -38,6 +38,7 @@
             </ul>
           </ul>
           <ul class="nav secondary-nav">
+          	<li>#{if currentNode}<a href="@{Application.connect()}">Connected to <b>${currentNode?.name}</b></a>#{/if}#{else}<a href="@{Application.connect()}"><b>Connect...</b></a>#{/else}</li>
           </ul>
         </div>
       </div> <!-- /fill -->
